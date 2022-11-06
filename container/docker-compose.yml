@@ -12,9 +12,11 @@ services:
           - vault_policies:/vault/policies
           - vault_data:/vault/data
         environment:
-          - VAULT_ADDR=https://0.0.0.0:8200
-          - VAULT_API_ADDR=https://0.0.0.0:8200
-          - VAULT_DISABLE_MLOCK=true
+          - VAULT_ADDR=http://0.0.0.0:8200
+          - VAULT_API_ADDR=http://0.0.0.0:8200
+          - VAULT_DEV_LISTEN_ADDRESS=http://0.0.0.0:8200
+          - VAULT_DEV_ROOT_TOKEN_ID=myroot
+#          - VAULT_DISABLE_MLOCK=true #mlock requires further configuration in non-root mode
         cap_add:
           - IPC_LOCK
         entrypoint: vault server -config=/vault/config/vault-config.hcl
