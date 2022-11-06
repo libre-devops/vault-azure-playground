@@ -75,7 +75,7 @@ module "lnx_vm" {
   vm_hostname        = "lnx${var.short}${var.loc}${terraform.workspace}"
   vm_size            = "Standard_B2ms"
   vm_os_simple       = "RHEL8Gen2"
-  vm_os_disk_size_gb = "266"
+  vm_os_disk_size_gb = "256"
 
   asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
 
@@ -107,7 +107,7 @@ module "run_command_lnx" {
 
 variable "custom_nsg_rules" {
   default = {
-    "AllowVNetInbound"  = { priority = "110", direction = "Inbound", access = "Allow", source_address_prefix = "VirtualNetwork", destination_address_prefix = "*" },
+    "AllowVNetInbound"  = { priority = "110", direction = "Inbound", access = "Allow", source_address_prefix = "VirtualNetwork", destination_address_prefix = "VirtualNetwork" },
   }
   description = "Rules to be added to nsg"
 }
