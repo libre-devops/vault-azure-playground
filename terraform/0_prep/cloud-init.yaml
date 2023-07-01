@@ -30,8 +30,7 @@ write_files:
       default_lease_ttl = "2160h"
       listener "tcp" {
         address = "0.0.0.0:8200"
-        tls_disable = 1
         proxy_protocol_behavior = "use_always"
       }
 
-      api_addr = "http://vault.craigthacker.dev:8200"
+      api_addr = "http://vault.azure.libredevops.org:8200"

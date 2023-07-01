@@ -18,8 +18,8 @@ module "linux_vm" {
   asg_name = "asg-${element(regexall("[a-z]+", element(module.linux_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
 
   admin_username = "LibreDevOpsAdmin"
-  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
-  ssh_public_key = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key
+  admin_password = random_password.password.result
+  ssh_public_key = azurerm_ssh_public_key.public_ssh_key.public_key
 
   subnet_id            = element(values(module.network.subnets_ids), 0)
   availability_zone    = "alternate"

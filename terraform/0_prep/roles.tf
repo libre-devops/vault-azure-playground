@@ -20,7 +20,7 @@ module "roles" {
     {
       role_assignment_name                             = "MiKvOwner"
       role_definition_id                               = format("/subscriptions/%s%s", data.azurerm_client_config.current.subscription_id, data.azurerm_role_definition.key_vault_administrator.id)
-      role_assignment_assignee_principal_id            = local.principal_id_string
+      role_assignment_assignee_principal_id            = azurerm_user_assigned_identity.managed_id.principal_id
       role_assignment_scope                            = format("/subscriptions/%s", data.azurerm_client_config.current.subscription_id)
       role_assignment_skip_service_principal_aad_check = true
     }
