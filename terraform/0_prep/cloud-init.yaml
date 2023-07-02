@@ -6,31 +6,17 @@ runcmd:
   - [ 'apt-get', 'update' ]
   - [ 'apt-get', 'dist-upgrade' ]
   - [ 'apt-get', 'install', '-y', 'lsof', 'gpg', 'curl', 'wget', 'jq', 'nano', 'nginx', 'apt-transport-https' ]
-  - [ 'wget', '-O-', 'https://apt.releases.hashicorp.com/gpg', '|', 'gpg', '--dearmor', '-o', '/usr/share/keyrings/hashicorp-archive-keyring.gpg' ]
+  - [ 'sh', '-c', 'wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg' ]
   - [ 'sh', '-c', 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list' ]
+  - [ 'mkdir', '-p', '/etc/vault.d' ]
+  - [ 'adduser', 'vault' ]
+  - [ 'adduser', 'nginx' ]
+  - [ 'mkdir', '-p', '/etc/nginx' ]
+  - [ 'chown', '-R', 'nginx:nginx', '/etc/nginx' ]
   - [ 'apt-get', 'update' ]
   - [ 'apt-get', 'install', '-y', 'vault' ]
-  - [ 'adduser', 'vault' ]
-  - [ 'sh', '-c', 'echo export VAULT_ADDR="http://127.0.0.1:8200" >> /etc/environment' ]
   - [ 'chown', 'vault:vault', '/etc/vault.d/vault.hcl' ]
+  - [ 'sh', '-c', 'echo export VAULT_ADDR="http://127.0.0.1:8200" >> /etc/environment' ]
   - [ 'systemctl', 'daemon-reload' ]
   - [ 'systemctl', 'start', 'vault' ]
   - [ 'systemctl', 'enable', 'vault' ]
-
-write_files:
-  - path: /etc/vault.d/vault.hcl
-    permissions: '0600'
-    owner: vault:vault
-    content: |
-      storage "file" {
-        path = "/opt/vault/data"
-      }
-      ui = true
-      max_lease_ttl = "2160h"
-      default_lease_ttl = "2160h"
-      listener "tcp" {
-        address = "0.0.0.0:8200"
-        proxy_protocol_behavior = "use_always"
-      }
-
-      api_addr = "http://vault.azure.libredevops.org:8200"
