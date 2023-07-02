@@ -40,7 +40,7 @@ resource "azurerm_virtual_machine_extension" "mount" {
   depends_on = [
     module.run_command_win
   ]
-  name                 = "${element(module.jmp_vm.vm_name, 0)}-Mount${title(module.sa.sa_name)}"
+  name                 = "${element(module.jmp_vm.vm_name, 0)}-MountFileShare-${title(module.sa.sa_name)}"
   virtual_machine_id   = element(module.jmp_vm.vm_ids, 0)
   publisher            = "Microsoft.Compute"
   type                 = "CustomScriptExtension"
