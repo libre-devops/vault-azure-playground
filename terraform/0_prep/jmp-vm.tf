@@ -49,7 +49,7 @@ resource "azurerm_virtual_machine_extension" "mount" {
   settings = <<SETTINGS
   {
     "fileUris": ["https://raw.githubusercontent.com/libre-devops/vault-azure-playground/main/terraform/0_prep/Mount-AzShare.ps1"],
-    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File script.ps1 -storageAccountName ${module.sa.sa_name} -storageAccountKey ${module.sa.sa_primary_access_key} -fileShareName ${azurerm_storage_share.share.name}"
+    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File Mount-AzShare.ps1 -storageAccountName ${module.sa.sa_name} -storageAccountKey ${module.sa.sa_primary_access_key} -fileShareName ${azurerm_storage_share.share.name}"
   }
   SETTINGS
 }
