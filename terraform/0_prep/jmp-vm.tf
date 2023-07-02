@@ -33,7 +33,7 @@ module "run_command_win" {
   os_type    = "windows"
   tags       = module.rg.rg_tags
 
-  command = "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; choco install -y git microsoft-edge azure-cli ; New-NetFirewallRule -DisplayName 'AllowPort445Inbound' -Direction Inbound -LocalPort 445 -Protocol TCP -Action Allow"
+  command = "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; choco install -y git microsoft-edge azure-cli powershell-core ; New-NetFirewallRule -DisplayName 'AllowPort445Inbound' -Direction Inbound -LocalPort 445 -Protocol TCP -Action Allow"
 }
 
 resource "azurerm_virtual_machine_extension" "mount" {
