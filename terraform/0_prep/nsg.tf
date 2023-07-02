@@ -64,3 +64,17 @@ resource "azurerm_network_security_rule" "https_inbound" {
   resource_group_name         = module.nsg.nsg_rg_name
   network_security_group_name = module.nsg.nsg_name
 }
+
+resource "azurerm_network_security_rule" "smb_inbound" {
+  name                        = "AllowSmbInbound"
+  priority                    = "152"
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "445"
+  source_address_prefix       = "VirtualNetwork"
+  destination_address_prefix  = "VirtualNetwork"
+  resource_group_name         = module.nsg.nsg_rg_name
+  network_security_group_name = module.nsg.nsg_name
+}
