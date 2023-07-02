@@ -50,3 +50,17 @@ resource "azurerm_network_security_rule" "bastion_inbound" {
   resource_group_name         = module.nsg.nsg_rg_name
   network_security_group_name = module.nsg.nsg_name
 }
+
+resource "azurerm_network_security_rule" "https_inbound" {
+  name                        = "AllowHttpsInbound"
+  priority                    = "151"
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "443"
+  source_address_prefix       = "VirtualNetwork"
+  destination_address_prefix  = "VirtualNetwork"
+  resource_group_name         = module.nsg.nsg_rg_name
+  network_security_group_name = module.nsg.nsg_name
+}

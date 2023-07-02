@@ -1,6 +1,11 @@
-
 module "linux_vm" {
   source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
+
+  depends_on = [
+    module.sa,
+    azurerm_storage_share.share,
+    azurerm_storage_share_file.files
+  ]
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
@@ -37,21 +42,31 @@ module "linux_vm" {
       - adduser vault
       - adduser nginx
       - mkdir -p /etc/nginx
-      - chown -R nginx:nginx /etc/nginx
+      - mkdir -p /etc/nginx/tls
       - apt-get update
-      - apt-get install -y vault
-      - chown vault:vault /etc/vault.d/vault.hcl
+      - apt-get install -y vault python3-pip nginx
+      - pip3 install azure-cli
       - sh -c 'echo export VAULT_ADDR="http://127.0.0.1:8200" >> /etc/environment'
-      - systemctl daemon-reload
-      - systemctl start vault
-      - systemctl enable vault
       - STORAGE_ACCOUNT_NAME=${module.sa.sa_name}
+      - az login --identity
       - STORAGE_ACCOUNT_KEY=$(az storage account keys list --account-name $STORAGE_ACCOUNT_NAME --query "[0].value" --output tsv)
       - MNT_PATH="/mnt/${module.sa.sa_name}"
-      - SMB_PATH="//${STORAGE_ACCOUNT_NAME}.file.core.windows.net/${azurerm_storage_share.share.name}"
+      - SMB_PATH="//$STORAGE_ACCOUNT_NAME.file.core.windows.net/${azurerm_storage_share.share.name}"
       - mkdir -p $MNT_PATH
       - mount -t cifs $SMB_PATH $MNT_PATH -o vers=3.0,username=$STORAGE_ACCOUNT_NAME,password=$STORAGE_ACCOUNT_KEY,serverino,nosharesock,actimeo=30,mfsymlinks
       - echo "$SMB_PATH $MNT_PATH cifs vers=3.0,username=$STORAGE_ACCOUNT_NAME,password=$STORAGE_ACCOUNT_KEY,serverino,nosharesock,actimeo=30,mfsymlinks 0 0" >> /etc/fstab
+      - cp $MNT_PATH/vault.hcl /etc/vault.d/vault.hcl
+      - cp $MNT_PATH/nginx.conf /etc/nginx/nginx.conf
+      - cp $MNT_PATH/tls.cer /etc/nginx/tls/tls.cer
+      - cp $MNT_PATH/tls.key /etc/nginx/tls/tls.key
+      - chown vault:vault /etc/vault.d/vault.hcl
+      - chown -R nginx:nginx /etc/nginx
+      - ufw allow https
+      - systemctl daemon-reload
+      - systemctl start nginx
+      - systemctl enable nginx
+      - systemctl start vault
+      - systemctl enable vault
     EOF
   )
 

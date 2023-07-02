@@ -14,6 +14,7 @@ module "dns" {
 locals {
   dns_entries = {
     vault = element(module.linux_vm.nic_ip_private_ip, 0)
+    jmp   = element(module.jmp_vm.nic_ip_private_ip, 0)
   }
 }
 

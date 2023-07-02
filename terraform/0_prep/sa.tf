@@ -5,7 +5,7 @@ module "sa" {
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  storage_account_name = "st${var.short}${var.loc}${terraform.workspace}${random_string.random.result}01"
+  storage_account_name = lower("st${var.short}${var.loc}${terraform.workspace}01")
   access_tier          = "Hot"
   identity_type        = "SystemAssigned"
 
@@ -13,10 +13,10 @@ module "sa" {
 
     // Set this block to enable network rules
     network_rules = {
-      default_action = "Deny"
+      default_action = "Allow"
       bypass         = ["AzureServices", "Metrics", "Logging"]
       ip_rules       = []
-      subnet_ids     = [element(values(module.network.subnets_ids), 0)]
+      subnet_ids     = []
     }
 
     blob_properties = {
@@ -43,7 +43,23 @@ module "sa" {
 }
 
 resource "azurerm_storage_share" "share" {
-  name                 = random_string.random.result
+  name                 = "share1"
   storage_account_name = module.sa.sa_name
   quota                = 50
+}
+
+locals {
+  files = {
+    "tls.cer"    = "tls.cer"
+    "tls.key"    = "tls.key"
+    "vault.hcl"  = "vault.hcl"
+    "nginx.conf" = "nginx.conf"
+  }
+}
+
+resource "azurerm_storage_share_file" "files" {
+  for_each         = local.files
+  name             = each.key
+  storage_share_id = azurerm_storage_share.share.id
+  source           = each.value
 }
